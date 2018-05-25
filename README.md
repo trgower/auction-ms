@@ -30,8 +30,6 @@ Auction site for an older version of MapleStory. Images not included.
 
 [User Page](https://gfycat.com/SplendidAcrobaticAcornwoodpecker)
 
-[Dashboard](https://gfycat.com/RichObeseAsianwaterbuffalo)
-
 [Sorting results](https://gfycat.com/FortunateSardonicFieldspaniel)
 
 [Alerts](https://gfycat.com/IdolizedFlusteredAfricancivet)
