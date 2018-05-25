@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+{% if failed %}
+<div class="has-danger">
+  <p class="form-control-feedback">Your search term must be at least 3 characters.</p>
+</div>
+{% elif term %}
+{% if res %}
+<div class="card mb-3">
+  <h6 class="text-center mt-1 ml-1 mb-1">Advertisement</h6>
+  <h6 class="mb-0 text-center hidden-sm-down">Large width ad here</h6>
+  <h6 class="mb-0 text-center hidden-sm-up">Phone ad here</h6>
+</div>
+<div class="row">
+  <div class="col-8">
+    <h6>
+      <small>
+        <select class="custom-select">
+          {% for i, v in sort_by.items() %}
+          <option value="{{ v }}" {% if v== sort %} selected{% endif %}>{{ i }}</option>
+          {% endfor %}
+        </select>
+      </small>
+    </h6>
+  </div>
+  <div class="col-4">
+    <h6>{{ pagination.links }}</h6>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <small>{{ pagination.info }}</small>
+  </div>
+</div>
+<ul class="list-unstyled">
+  {% for auc in res %}
+  <hr>
+  <li class="media">
+    <a href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="42px" alt="">
+    </a>
+    <div class="media-body row">
+      <div class="col-sm-9 col-8">
+        {% if auc.item_id < 2000000 %}
+        <h6 class="mb-0">
+          <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">
+            <strong>{{auc.strings.name }}{{ auc|itemupgrades }}</strong>
+          </a>
+        </h6>
+        <h6>
+          <small class="text-muted ml-l">{{ auc|auctionstats }}</small>
+        </h6>
+        {% else %}
+        <h6 class="mb-0">
+          <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">{{ auc.strings.name }}</a>
+        </h6>
+        <h6>
+          <small class="text-muted hidden-xs-down ml-l">{{ auc.strings.desc|fixdesc|trimdesc }}</small>
+        </h6>
+        {% endif %}
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt="" width="12px">
+          <strong>{{ auc.bid|meso }}</strong>
+          {% set bn = auc.bids.count() %}
+          <small class="text-muted">{{ bn }} bid{% if bn > 1 or bn <= 0 %}s{% endif %}</small>
+        </h6>
+        {% if auc.reserve > auc.bid %}
+        <h6 class="mb-1">
+          <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        </h6>
+        {% endif %}
+        <h6 class="mt-1 mb-0">
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+          {% if auc.fm_channel > 0 %}
+          <small class="text-muted"><span class="badge badge-default">CH{{ auc.fm_channel }}FM{{ auc.fm_door }}</span>
+          </small>
+          {% endif %}
+        </h6>
+      </div>
+      <div class="col-sm-3 col-4 text-sm-right">
+        <h6 class="mb-0">
+          <small>
+            {% set name = auc.seller_id|getname %}
+            <a class="card-link" href="/u/{{ name }}">{{ name }}</a>
+            (<a href="/feedback/{{ name }}">{{ auc.seller_id|getscore }}</a>)
+          </small>
+        </h6>
+        <h6 class="">
+          <small>{{ auc.seller_id|getpercent }}% Positive</small>
+        </h6>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+  <hr>
+</ul>
+{{ pagination.links }}
+{% else %}
+<hr>
+<h6>There are no search results.</h6>
+{% endif %}
+{% endif %}
+<script src="{{ url_for('.static', filename='js/jquery.query-object.js') }}"></script>
+<script>
+  $('select').on('change', function() {
+    if (this.value == 'item_id')
+      location = jQuery.query.REMOVE("sort")
+    else
+      location = jQuery.query.set("sort", this.value)
+  })
+
+</script>
+{% endblock %}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+        integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/styles/custom-bootstrap.css">
+  <title>MapleAuction</title>
+</head>
+<body>
+<nav class="navbar navbar-toggleable-sm navbar-inverse bg-inverse">
+  <div class="input-group">
+    <a class="navbar-brand align-top" href="/">
+      <img src="/static/images/title.png" class="d-inline-block align-top" alt="">
+      <span class="hidden-xs-down">MapleAuction <small class="text-muted">alpha</small></span>
+    </a>
+    <form action="/search" class="form-inline my-0 ml-lg-1">
+      <input class="form-control" id="query" name="query" placeholder="Search for Auctions" size="180" type="text"
+             value="{% if query %}{{ query }}{% endif %}">
+
+      <button class="btn btn-outline-success" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+    </form>
+  </div>
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarToggler"
+          aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarToggler">
+    <ul class="navbar-nav navbar-right ml-auto mt-2 mt-lg-0">
+      {% if current_user.is_authenticated %}
+      <a class="nav-link" href="/post">
+        <button class="btn btn-success btn-sm hidden-xs-down" type="submit">Post Auction</button>
+        <button class="btn btn-success btn-md hidden-sm-up" type="submit">Post Auction</button>
+      </a>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard">
+          <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+          {{ current_user.username }}
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link hidden-sm-up{% if current_user|newmsg %} text-info{% endif %}" href="/messages">
+          <i class="fa fa-comments fa-lg" aria-hidden="true"></i>
+          Messages
+        </a>
+        <a class="nav-link hidden-xs-down{% if current_user|newmsg %} text-info{% endif %}" href="/messages"
+           data-toggle="tooltip" title="Messages">
+          <i class="fa fa-comments fa-lg" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link hidden-sm-up" href="{{ url_for('user.profile') }}">
+          <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+          Settings
+        </a>
+        <a class="nav-link hidden-xs-down" href="{{ url_for('user.profile') }}" data-toggle="tooltip" title="Settings">
+          <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link hidden-sm-up" href="{{ url_for('user.logout') }}">
+          <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i>
+          Sign Out
+        </a>
+        <a class="nav-link hidden-xs-down" href="{{ url_for('user.logout') }}" data-toggle="tooltip" title="Sign Out">
+          <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i>
+        </a>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('user.register') }}">
+          <i class="fa fa-user-plus fa-lg" aria-hidden="true"></i>
+          Register
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('user.login') }}">
+          <i class="fa fa-sign-in fa-lg" aria-hidden="true"></i>
+          Sign In
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+<div class="container" style="padding-top: 1rem;">
+  <div class="row">
+    <div class="col-lg-2">
+      <!-- Member side bar -->
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8">
+      <!-- Site flashed messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      {% if category == 'error' %}{% set category = 'warning' %}{% endif %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message|safe }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+      <!-- Page content -->
+      <script src="https://use.fontawesome.com/22fe035108.js"></script>
+      <script
+          src="https://code.jquery.com/jquery-3.2.1.min.js"
+          integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+          crossorigin="anonymous"></script>
+      <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.1/jquery.autocomplete.min.js">
+      </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+              integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+              crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+              integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+              crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+              integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+              crossorigin="anonymous"></script>
+      {% block content %}{% endblock %}
+    </div>
+    <!-- Left sidebar for whatever -->
+    <div class="col-lg-2">
+    </div>
+  </div>
+</div>
+<div class="footer text-truncate">
+  <small class="text-muted">
+    MapleStory and any related images and content are copyrighted by Nexon.<br>
+    Advertisements found in this site are to support server and related costs of maintaining this website.
+  </small>
+</div>
+</body>
+<script>
+  $('#query').autocomplete({
+    serviceUrl: '/autocomplete',
+    minChars: 3,
+    dataType: 'json',
+    deferRequestBy: 150
+  });
+
+</script>
+<script>
+  $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+</script>
+</html>

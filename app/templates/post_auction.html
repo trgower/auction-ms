@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="{{ url_for('.static', filename='js/cleave.min.js') }}"></script>
+<h3>New Auction</h3>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card mb-3">
+      <div class="card-block">
+        <div class="media">
+          <a class="align-self-center">
+            <img class="mr-3" src="static/images/{{ item.id }}.png" width="80px" alt="{{ item.id }}: {{ item.name }}">
+          </a>
+          <div class="media-body">
+            <h4>{{ item.name }}</h4>
+            <h6 class="mb-0">
+              <small class="text-muted">{{ item.desc|fixdesc }}</small>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<form id="auction_form" class="form mb-3" method="post">
+  {{ auction_form.csrf_token }}
+  <div class="row">
+    {% block equipment %}{% endblock %}
+    {% block item %}{% endblock %}
+  </div>
+</form>
+<div class="modal fade" id="reserveModal" tabindex="-1" role="dialog" aria-labelledby="reserveModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reserveModalLabel">Reserve Price</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <!-- Thank you Kouki for the suggestion! -->
+      <div class="modal-body">
+        A reserve price is a minimum price for an item. If bidding ends before the reserve is reached, the item will not
+        be sold.
+        <br>
+        <br>
+        The listing will <strong>not display</strong> the reserve price. It will display this
+        <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        instead
+        until the reserve has been met.
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="fmSpotModal" tabindex="-1" role="dialog" aria-labelledby="fmSpotModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fmSpotModalLabel">FM Spot Warning</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        If your item gets bought in your shop, you will <strong>not be able to cancel this auction if there are any
+        bidders.</strong>
+        You will only be able to <strong>end the auction early</strong>. This means that the auction ends and whoever is
+        the max bidder is the winner of the auction. You will be obligated to sell this item to that person and that
+        person
+        will be able to give negative feedback if they aren't feeling merciful. They can also give positive, neutral, or
+        no feedback at all!
+        Communicating with the would-be buyer can help your situation if you ever need to end an auction early.
+        <br>
+        <br>
+        The idea behind this is to allow the user-base decide how to deal with auctions ending early. All auctions
+        ending
+        early must be treated the same way to add integrity to the auctions.
+        <br>
+        <br>
+        In the future it may be possible to dispute a negative feedback from a would-be buyer if you have proof that the
+        item
+        did indeed sell and your auction was listed with an FM spot. However, this will require humans to look at
+        disputes which may
+        or may not be possible in the future.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

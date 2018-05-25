@@ -1,0 +1,520 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card mb-3">
+      <div class="card-block">
+        <div class="media">
+          <a><img class="mr-2" src="{{ url_for('static', filename='images/meso_large.png') }}" width="32px"></a>
+          <div class="media-body">
+            <h5 class="mb-0">{{ u.username }}</h5>
+            <h6 class="mb-0">
+              <small class="">{{ feedback_percentage }}% Positive</small>
+            </h6>
+            <h6 class="mb-1">
+              <small class="">Score: <a href="/feedback/{{ u.username }}">{{ feedback_score }}</a></small>
+            </h6>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <small class="mx-2"><a href="/u/{{ u.username }}" class="card-link">View profile</a></small>
+            <small class="mx-2"><a href="/feedback/{{ u.username }}" class="card-link">Feedback</a></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if watchlist %}
+<h5 class="mb-0">Watch List</h5>
+<hr class="mt-1 mb-0">
+<ul class="list-unstyled">
+  {% for auc in watchlist %}
+  <li class="media mb-1 mt-1">
+    <a class="align-self-center" href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="40px" alt="">
+    </a>
+    <div class="media-body row">
+      <div class="col-sm-6 col-7">
+        <h6 class="dropdown mb-0">
+          <small>
+            <a class="text-i{{ auc.item_quality }} m-0 dropdown-toggle" href="/auction/{{ auc.id }}"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <strong>{{ auc.strings.name }}{{ auc|itemupgrades }}</strong>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item m-0" href="/auction/{{ auc.id }}">
+                <small>View auction</small>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item m-0" href="/watch/{{ auc.id }}">
+                <small>Remove</small>
+              </a>
+            </div>
+          </small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.item_id < 2000000 %}
+          <small class="ml-l text-muted">{{ auc|auctionstats }}</small>
+          {% endif %}
+        </h6>
+        {% set bn = auc.bids.count() %}
+        <h6 class="mb-0">
+          <small class="">{{ bn }} bid{% if bn > 1 or bn <= 0 %}s{% endif %}</small>
+        </h6>
+        {% if bn > 0 %}
+        {% if auc.bids.first() %}
+        {% set bidder_name = auc.bids.first().bidder_id|getname %}
+        {% else %}
+        {% set bidder_name = '' %}
+        {% endif %}
+        <h6 class="mb-0">
+          <small class="">High bidder: <a class="card-link" href="/u/{{ bidder_name }}">{{ bidder_name }}</a></small>
+        </h6>
+        {% endif %}
+        <h6 class="hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+      <div class="col-sm-3 col-5">
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}">
+          <small><strong>{{ auc.bid|meso }}</strong></small>
+        </h6>
+        {% if auc.reserve > auc.bid %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 hidden-xs-down text-right">
+        <h6>
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ watch_page.links }}
+{% endif %}
+{% if recent_activity %}
+<h5 class="mb-0">Recent transactions</h5>
+<hr class="mb-0 mt-1">
+<ul class="list-unstyled">
+  {% for auc in recent_activity %}
+  <li class="media mb-1 mt-1">
+    <a class="align-self-center" href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="40px" alt="">
+    </a>
+    <div class="media-body row">
+      {% if auc.bids.first() %}
+      <div class="col-sm-6 col-7">
+        <h6 class="dropdown mb-0">
+          <small>
+            <a class="text-i{{ auc.item_quality }} dropdown-toggle" href="http://example.com"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <strong>{{ auc.strings.name }}{{ auc|itemupgrades }}</strong>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item m-0" href="/auction/{{ auc.id }}">
+                <small>View auction</small>
+              </a>
+              <div class="dropdown-divider"></div>
+              {% if auc.buyer_id == u.id %}
+              <a class="dropdown-item m-0" href="#" data-toggle="modal" data-target="#messageModal"
+                 data-recpid="{{ auc.seller_id }}"
+                 data-recpname="{{ auc.seller_id|getname }}">
+                <small>Message seller</small>
+              </a>
+              {% elif auc.seller_id == u.id %}
+              <a class="dropdown-item m-0" href="#" data-toggle="modal" data-target="#messageModal"
+                 data-recpid="{{ auc.buyer_id }}"
+                 data-recpname="{{ auc.buyer_id|getname }}">
+                <small>Message buyer</small>
+              </a>
+              {% endif %}
+              {% if (auc.transaction_step < 2 and auc.buyer_id == u.id) or
+              ((auc.transaction_step == 2 or auc.transaction_step == 0) and auc.seller_id == u.id) %}
+              {% if auc.buyer_id == u.id %}
+              {% set recpid = auc.seller_id %}
+              {% elif auc.seller_id == u.id %}
+              {% set recpid = auc.buyer_id %}
+              {% endif %}
+              <a class="dropdown-item m-0" href="#" data-toggle="modal" data-target="#feedbackModal"
+                 data-recpid="{{ recpid }}" data-recpname="{{ recpid|getname }}"
+                 data-item="{{ auc.strings.name }}{{ auc|itemupgrades }}" data-aucid="{{ auc.id }}"
+                 data-itemid="{{ auc.item_id }}" data-price="{{ auc.bid|meso }}" data-quality="{{ auc.item_quality }}"
+                 data-sellerid="{{ auc.seller_id }}">
+                <small>Leave feedback</small>
+              </a>
+              {% endif %}
+            </div>
+          </small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.item_id < 2000000 %}
+          <small class="ml-l text-muted">{{ auc|auctionstats }}</small>
+          {% endif %}
+        </h6>
+        {% if auc.buyer_id == u.id %}
+        {% set seller_name = auc.seller_id|getname %}
+        <h6 class="mb-0">
+          <small class="">Seller: <a class="card-link" href="/u/{{ seller_name }}">{{ seller_name }}</a></small>
+        </h6>
+        {% elif auc.seller_id == u.id %}
+        {% set bn = auc.bids.count() %}
+        <h6 class="mb-0">
+          <small class="">{{ bn }} bid{% if bn > 1 or bn <= 0 %}s{% endif %}</small>
+        </h6>
+        {% if bn > 0 %}
+        {% if auc.bids.first() %}
+        {% set bidder_name = auc.bids.first().bidder_id|getname %}
+        {% else %}
+        {% set bidder_name = '' %}
+        {% endif %}
+        <h6 class="mb-0">
+          <small class="">Winner: <a class="card-link" href="/u/{{ bidder_name }}">{{ bidder_name }}</a></small>
+        </h6>
+        {% endif %}
+        {% endif %}
+        {% if (auc.transaction_step < 2 and auc.buyer_id == u.id) or
+        ((auc.transaction_step == 2 or auc.transaction_step == 0) and auc.seller_id == u.id) %}
+        <h6 class="mb-0 hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-warning">Leave feedback</span></small>
+        </h6>
+        {% endif %}
+        {% if auc.transaction_step == 3 or
+        (auc.transaction_step == 1 and auc.buyer_id == u.id) or
+        (auc.transaction_step == 2 and auc.seller_id == u.id) %}
+        <h6 class="mb-0 hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-success">Feedback recieved!</span></small>
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 col-5">
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}">
+          <small><strong>{{ auc.bid|meso }}</strong></small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.buyer_id == u.id %}
+          <small class="text-muted"><span class="badge badge-pill badge-success">Won</span></small>
+          {% elif auc.seller_id == u.id %}
+          <small class="text-muted"><span class="badge badge-pill badge-success">Sold</span></small>
+          {% endif %}
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 hidden-xs-down text-right">
+        {% if (auc.transaction_step < 2 and auc.buyer_id == u.id) or
+        ((auc.transaction_step == 2 or auc.transaction_step == 0) and auc.seller_id == u.id) %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-warning">Leave feedback</span></small>
+        </h6>
+        {% endif %}
+        {% if auc.transaction_step == 3 or
+        (auc.transaction_step == 1 and auc.buyer_id == u.id) or
+        (auc.transaction_step == 2 and auc.seller_id == u.id) %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-success">Feedback recieved!</span></small>
+        </h6>
+        {% endif %}
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ recent_page.links }}
+{% endif %}
+<h5 class="mb-0">Selling</h5>
+<hr class="mt-1 mb-0">
+{% if current_auctions %}
+<ul class="list-unstyled">
+  {% for auc in current_auctions %}
+  <li class="media mb-1 mt-1">
+    <a class="align-self-center" href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="40px" alt="">
+    </a>
+    <div class="media-body row">
+      <div class="col-sm-6 col-7">
+        <h6 class="dropdown mb-0">
+          <small>
+            <a class="text-i{{ auc.item_quality }} dropdown-toggle" href="http://example.com"
+               data-toggle="dropdown"
+               aria-haspopup="true" aria-expanded="false">
+              <strong>{{ auc.strings.name }}{{ auc|itemupgrades }}</strong>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item m-0" href="/auction/{{ auc.id }}">
+                <small>View auction</small>
+              </a>
+              <div class="dropdown-divider"></div>
+              {% if auc.bids.count() == 0 %}
+              <a class="dropdown-item m-0" href="#" data-toggle="modal" data-target="#cancelAuctionModal"
+                 data-aucid="{{ auc.id }}">
+                <small>Cancel auction</small>
+              </a>
+              {% else %}
+              <a class="dropdown-item m-0" href="#" data-toggle="modal" data-target="#endEarlyModal"
+                 data-aucid="{{ auc.id }}">
+                <small>End early</small>
+              </a>
+              {% endif %}
+            </div>
+          </small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.item_id < 2000000 %}
+          <small class="ml-l text-muted">{{ auc|auctionstats }}</small>
+          {% endif %}
+        </h6>
+        {% set bn = auc.bids.count() %}
+        <h6 class="mb-0">
+          <small class="">{{ bn }} bid{% if bn > 1 or bn <= 0 %}s{% endif %}</small>
+        </h6>
+        {% if bn > 0 %}
+        {% if auc.bids.first() %}
+        {% set bidder_name = auc.bids.first().bidder_id|getname %}
+        {% else %}
+        {% set bidder_name = '' %}
+        {% endif %}
+        <h6 class="mb-0">
+          <small class="">High bidder: <a class="card-link" href="/u/{{ bidder_name }}">{{ bidder_name }}</a></small>
+        </h6>
+        {% endif %}
+        <h6 class="hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+      <div class="col-sm-3 col-5">
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}"
+               alt="">
+          <small><strong>{{ auc.bid|meso }}</strong></small>
+        </h6>
+        {% if auc.reserve > auc.bid %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 hidden-xs-down text-right">
+        <h6>
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ auction_page.links }}
+{% else %}
+<h6 class="mt-2">There's nothing here.</h6><br>
+{% endif %}
+<h5 class="mb-0">Unsold</h5>
+<hr class="mt-1 mb-0">
+{% if unsold %}
+<ul class="list-unstyled">
+  {% for auc in unsold %}
+  <li class="media mb-1 mt-1">
+    <a class="align-self-center" href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="40px" alt="">
+    </a>
+    <div class="media-body row">
+      <div class="col-sm-6 col-7">
+        <h6 class="dropdown mb-0">
+          <small>
+            <a class="text-i{{ auc.item_quality }} m-0" href="/auction/{{ auc.id }}">
+              <strong>{{ auc.strings.name }}{{ auc|itemupgrades }}</strong>
+            </a>
+          </small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.item_id < 2000000 %}
+          <small class="ml-l text-muted">{{ auc|auctionstats }}</small>
+          {% endif %}
+        </h6>
+        {% set bn = auc.bids.count() %}
+        <h6 class="mb-0">
+          <small class="">{{ bn }} bid{% if bn > 1 or bn <= 0 %}s{% endif %}</small>
+        </h6>
+        {% if bn > 0 %}
+        {% if auc.bids.first() %}
+        {% set bidder_name = auc.bids.first().bidder_id|getname %}
+        {% else %}
+        {% set bidder_name = '' %}
+        {% endif %}
+        <h6 class="mb-0">
+          <small class="">High bidder: <a class="card-link" href="/u/{{ bidder_name }}">{{ bidder_name }}</a></small>
+        </h6>
+        {% endif %}
+        <h6 class="hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+      <div class="col-sm-3 col-5">
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}"
+               alt="">
+          <small><strong>{{ auc.bid|meso }}</strong></small>
+        </h6>
+        {% if auc.reserve > auc.bid %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 hidden-xs-down text-right">
+        <h6>
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ unsold_page.links }}
+{% else %}
+<h6 class="mt-2">There's nothing here.</h6><br>
+{% endif %}
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" aria-labelledby="feedbackModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="feedbackModalLabel">Leave feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" class="form" method="post">
+          {{ feedback_form.csrf_token }}
+          {{ feedback_form.recp_id }}
+          {{ feedback_form.auc_id }}
+          {{ feedback_form.quality }}
+          <div class="media mb-2 mt-0 mx-3">
+            <a class="align-self-center"><img class="d-flex mr-2 feedback-img" src="" width="32px" alt=""></a>
+            <div class="media-body row">
+              <div class="col-7">
+                <h6 class="mb-0">
+                  <small><strong class="itemname text-i0"></strong></small>
+                </h6>
+                <h6 class="mb-0">
+                  <small class="itemstats ml-l text-muted"></small>
+                </h6>
+              </div>
+              <div class="col-5">
+                <h6 class="mb-0 text-right">
+                  <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt="">
+                  <small><strong class="price"></strong></small>
+                </h6>
+              </div>
+            </div>
+          </div>
+          {% for subf in feedback_form.score %}
+          <label class="custom-control custom-radio">
+            {{ subf }}
+            <span class="ml-1 custom-control-description"><small>{{ subf.label.text }}</small></span>
+          </label>
+          {% endfor %}
+          {{ feedback_form.feedback(maxlength=50) }}
+          {{ feedback_form.feedback_btn }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Send message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" class="form" method="post">
+          {{ message_form.csrf_token }}
+          {{ message_form.recp_id }}
+          {{ message_form.message(maxlength=64) }}
+          {{ message_form.send_btn }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="cancelAuctionModal" tabindex="-1" role="dialog" aria-labelledby="cancelAuctionModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelAuctionModalLabel">Cancel Auction</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Cancelling the auction before a bid has been placed will completely delete the auction from reality, including
+        your memories.
+        <br><br>
+        Are you sure you want to cancel?
+      </div>
+      <div class="modal-footer">
+        <input id="auc_id_cancel" name="auc_id_cancel" type="hidden" value="">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button id="cancelAuctionYes" type="button" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="endEarlyModal" tabindex="-1" role="dialog" aria-labelledby="endEarlyModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="endEarlyModalLabel">End Early</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Ending an auction early does not delete the auction from existence. It just ends the auction making the highest
+        bidder the winner of the auction. You are advised to <strong>message the highest bidder before ending the
+        auction</strong> if you
+        do not intend to sell the item to them. The winner will still be able to give you negative feedback. This system
+        allows the user-base to decide how to deal with auctions ending early.
+        <br><br>
+        Do you still want to end the auction early?
+      </div>
+      <div class="modal-footer">
+        <input id="auc_id_early" name="auc_id_early" type="hidden" value="">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button id="endAuctionYes" type="button" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/static/js/dashboard.js"></script>
+<div class="card mb-3 mt-3">
+  <h6 class="text-center mt-1 ml-1 mb-1">Advertisement</h6>
+  <h6 class="mb-0 text-center hidden-sm-down">Large width ad here</h6>
+  <h6 class="mb-0 text-center hidden-sm-up">Phone ad here</h6>
+</div>
+{% endblock %}

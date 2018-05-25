@@ -1,0 +1,91 @@
+{% extends "post_auction.html" %}
+{% block item %}
+<div class="col-sm-12">
+  {{ auction_form.item_id }}
+  <div class="mb-2 form-group row {% if auction_form.starting_bid.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.starting_bid.label.text }}</label>
+    <div class="input-group input-group-lg col-9">
+      {{ auction_form.starting_bid }}
+      <script>
+        var cleave = new Cleave('.starting-bid-element', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand'
+        });
+      </script>
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.starting_bid.errors %}
+    {% for e in auction_form.starting_bid.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <small><div class="form-group row {% if auction_form.min_bid_inc.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.min_bid_inc.label.text }}</label>
+    <div class="input-group input-group-md col-9">
+      {{ auction_form.min_bid_inc }}
+      <script>
+        var cleave = new Cleave('.min-bid-inc-element', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand'
+        });
+      </script>
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.min_bid_inc.errors %}
+    {% for e in auction_form.min_bid_inc.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div></small>
+  <div class="form-group row {% if auction_form.reserve.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.reserve.label.text }} <a class="text-info" href="#" data-toggle="modal" data-target="#reserveModal"><i class="fa fa-question-circle" aria-hidden="true"></i></a></label>
+    <div class="input-group input-group-lg mt-1 col-9">
+      <span class="input-group-addon">
+        {{ auction_form.reserve_check }}
+      </span>
+      {{ auction_form.reserve(disabled=True) }}
+      <script>
+        var cleave = new Cleave('.reserve-element', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand'
+        });
+      </script>
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.reserve.errors %}
+    {% for e in auction_form.reserve.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <div class="form-group row">
+    <label class="col-3 col-form-label">{{ auction_form.length.label.text }}</label>
+    <div class="input-group input-group-lg mt-1 col-9">
+      {{ auction_form.length }}
+    </div>
+  </div>
+  <div class="form-group row">
+    <label class="col-3 col-form-label">{{ auction_form.fm_channel.label.text }} <a class="text-warning" href="#" data-toggle="modal" data-target="#fmSpotModal"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></label>
+    <!-- Thank you C++ for the suggestion! -->
+    <div class="input-group input-group-lg mt-1 col-5">
+      {{ auction_form.fm_channel }}
+    </div>
+    <div class="input-group input-group-lg mt-1 col-4">
+      {{ auction_form.fm_door }}
+    </div>
+  </div>
+  <div class="form-group {% if auction_form.recaptcha.errors %}has-danger{% endif %}">
+    {{ auction_form.recaptcha }}
+    {% if auction_form.recaptcha.errors %}
+    <p align="center" class="form-control-feedback">reCAPTCHA verification failed!</p>
+    {% endif %}
+  </div>
+  {{ auction_form.submit }}
+  <script src="/static/js/post_item.js"></script>
+</div>
+</div>
+{% endblock %}

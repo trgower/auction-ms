@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-sm-4 text-truncate">
+    <h5 class="mb-0">New Auctions</h5>
+    <hr class="mb-0 mt-1">
+    {% if new_auctions %}
+    <ul class="list-unstyled">
+      {% for auc in new_auctions %}
+      <li class="media mb-1 mt-1">
+        <a class="align-self-center" href="/auction/{{ auc.id }}">
+          <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+               src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+               width="36px" alt="">
+        </a>
+        <div class="media-body row">
+          <div class="col-sm-12">
+            <h6 class="mb-0">
+              <small><strong>
+                <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">
+                  {{ auc.strings.name }}{{auc|itemupgrades }}</a>
+              </strong></small>
+            </h6>
+            <h6 class="mb-0">
+              <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt="">
+              <small><strong>{{ auc.bid|meso }}</strong></small>
+            </h6>
+          </div>
+        </div>
+      </li>
+      <hr class="mb-0 mt-0">
+      {% endfor %}
+    </ul>
+    {% else %}
+    <h6 class="mt-2">There's nothing here.</h6>
+    {% endif %}
+  </div>
+  <div class="col-sm-4 text-truncate">
+    <h5 class="mb-0">Hot Auctions</h5>
+    <hr class="mb-0 mt-1">
+    {% if hot_auctions %}
+    <ul class="list-unstyled">
+      {% for auc in hot_auctions %}
+      <li class="media mb-1 mt-1">
+        <a class="align-self-center" href="/auction/{{ auc.id }}">
+          <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+               src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+               width="36px" alt="">
+        </a>
+        <div class="media-body row">
+          <div class="col-sm-12">
+            <h6 class="mb-0">
+              <small><strong>
+                <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">
+                  {{ auc.strings.name }}{{auc|itemupgrades }}</a>
+              </strong></small>
+            </h6>
+            <h6 class="mb-0">
+              <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt="">
+              <small><strong>{{ auc.bid|meso }}</strong></small>
+            </h6>
+          </div>
+        </div>
+      </li>
+      <hr class="mb-0 mt-0">
+      {% endfor %}
+    </ul>
+    {% else %}
+    <h6 class="mt-2">There's nothing here.</h6>
+    {% endif %}
+  </div>
+  <div class="col-sm-4 text-truncate">
+    <h5 class="mb-0">Ending Soon</h5>
+    <hr class="mb-0 mt-1">
+    {% if ending_soon %}
+    <ul class="list-unstyled">
+      {% for auc in ending_soon %}
+      <li class="media mb-1 mt-1">
+        <a class="align-self-center" href="/auction/{{ auc.id }}">
+          <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+               src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+               width="36px" alt="">
+        </a>
+        <div class="media-body row">
+          <div class="col-sm-12">
+            <h6 class="mb-0">
+              <small><strong>
+                <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">
+                  {{ auc.strings.name }}{{auc|itemupgrades }}</a>
+              </strong></small>
+            </h6>
+            <h6 class="mb-0">
+              <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt="">
+              <small><strong>{{ auc.bid|meso }}</strong></small>
+            </h6>
+          </div>
+        </div>
+      </li>
+      <hr class="mb-0 mt-0">
+      {% endfor %}
+    </ul>
+    {% else %}
+    <h6 class="mt-2">There's nothing here.</h6>
+    {% endif %}
+  </div>
+</div>
+<div class="card mb-3">
+  <h6 class="text-center mt-1 ml-1 mb-1">Advertisement</h6>
+  <h6 class="mb-0 text-center hidden-sm-down">Large width ad here</h6>
+  <h6 class="mb-0 text-center hidden-sm-up">Phone ad here</h6>
+</div>
+{% endblock %}

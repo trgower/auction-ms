@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-1 text-center">
+    <a class="card-link" href="/messages" data-toggle="tooltip" title="Back">
+      <i class="fa fa-arrow-left fa-lg" aria-hidden="true"></i>
+    </a>
+  </div>
+  <div class="col-11">
+    <h3>{{ c_name }}</h3>
+  </div>
+</div>
+{% if messages %}
+{% if moremsg %}
+<h6 class="text-center"><a href="/messages/{{ c_name }}?limit={{ limit + load_more}}">Load {{ load_more }} more
+  messages</a></h6>
+{% endif %}
+<ul class="list-unstyled">
+  {% for msg in messages %}
+  {% set last_msg = messages[loop.index - 2] %}
+  {% set separate = loop.index == 1 or (last_msg.sender_id != msg.sender_id) or last_msg|separatemsg(msg) %}
+  {% if separate %}
+  <hr class="mb-0 mt-2">
+  {% endif %}
+  {% if separate %}
+  <li class="media mt-2 mr-2 ml-2">
+    {% else %}
+  <li class="media mr-2 ml-2">
+    {% endif %}
+    {% if separate %}
+    <a class="align-self-center" href="/u/{{ msg.sender_id|getname }}">
+      <img class="d-flex mr-3" src="{{ url_for('static', filename='images/meso_large.png') }}" width="28px" alt="">
+    </a>
+    {% else %}
+    <div class="d-flex mr-3" style="width: 28px;"></div>
+    {% endif %}
+    <div class="media-body row">
+      <div class="col-12">
+        {% if separate %}
+        <h6 class="mb-0">
+          <a class="card-link" href="/u/{{ msg.sender_id|getname }}">
+            {{ msg.sender_id|getname }}
+          </a>
+          <small class="text-muted ml-1">{{ msg|msgtime }}</small>
+        </h6>
+        {% endif %}
+        {{ msg.message }}
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<h6 class="mt-2 mb-4 text-center">No messages</h6>
+{% endif %}
+<div class="form-group {% if msg_form.message.errors %}has-danger{% endif %}">
+  <form id="messageForm" action="" class="form mt-2" method="post">
+    {{ msg_form.csrf_token }}
+    {{ msg_form.message }}
+    {{ msg_form.send_btn }}
+    <div class="has-danger">
+      {% if msg_form.message.errors %}
+      {% for e in msg_form.message.errors %}
+      <p class="form-control-feedback">{{ e }}</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </form>
+</div>
+<script>
+  $("textarea").keydown(function(e){
+    // Enter was pressed without shift key
+    if (e.keyCode == 13 && !e.shiftKey) {
+      e.preventDefault();
+        // submit form
+        $('form#messageForm').submit();
+    }
+  });
+
+  $("html, body").animate({ scrollTop: $(document).height() }, 500);
+  $("textarea").focus();
+</script>
+{% endblock %}

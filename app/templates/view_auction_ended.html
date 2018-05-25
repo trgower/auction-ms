@@ -1,0 +1,4 @@
+{% extends "view_auction.html" %}
+{% block auction_message %}
+<h6>This auction ended {{ auction.end|timesince }}.</h6>
+{% endblock %}

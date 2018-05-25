@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card mb-3">
+      <div class="card-block">
+        <div class="media">
+          <a class=""><img class="mr-2" src="{{ url_for('static', filename = 'images/meso_large.png') }}" width="32px"
+                           alt=""></a>
+          <div class="media-body">
+            <h5 class="mb-0">{{ u.username }}
+              {% if current_user.is_authenticated and current_user.id != u.id %}
+              <small class="ml-0"><a class="card-link" href="#" data-toggle="modal" data-target="#messageModal"><i
+                  class="fa fa-envelope" aria-hidden="true"></i>
+              </a></small>
+              {% endif %}
+            </h5>
+            <h6 class="mb-0">
+              <small class="">{{ feedback_percentage }}% Positive</small>
+            </h6>
+            <h6 class="mb-1">
+              <small class="">Score: {{ feedback_score }}</small>
+            </h6>
+          </div>
+        </div>
+        <div class="mx-1 mt-2">
+          {% if feedback %}
+          {% for fb in feedback %}
+          <div class="row">
+            <div class="col-8 text-left">
+              {% if fb.score == 1 %}
+              {% set type = 'success' %}
+              {% set sign = 'fa-smile-o' %}
+              {% elif fb.score == -1 %}
+              {% set type = 'danger' %}
+              {% set sign = 'fa-frown-o' %}
+              {% elif fb.score == 0 %}
+              {% set type = 'default' %}
+              {% set sign = 'fa-meh-o' %}
+              {% endif %}
+              <span class="badge badge-{{ type }}"><i class="fa {{ sign }}" aria-hidden="true"></i></span>
+              <small class="card-text">
+                {{ fb.message|trimdesc }}
+              </small>
+            </div>
+            <div class="col-4 text-right">
+              <small class="card-text">
+                {% set reviewer = fb.reviewer|getname %}
+                <a class="card-link" href="/u/{{ reviewer }}">{{ reviewer }}</a>
+                <a data-toggle="tooltip" data-placement="bottom" title="View auction"
+                   href="/auction/{{ fb.auction_id }}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+              </small>
+            </div>
+          </div>
+          {% endfor %}
+          {% endif %}
+          {% if feedback_count > 3 %}
+          <h6 class="mb-0 text-center">
+            <small class=""><a class="card-link" href="/feedback/{{ u.username }}">See all {{ feedback_count }}
+              reviews</a></small>
+          </h6>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<h5 class="mb-0">Selling</h5>
+<hr class="mb-0 mt-1">
+{% if current_auctions %}
+<ul class="list-unstyled">
+  {% for auc in current_auctions %}
+  <li class="media mb-1 mt-1">
+    <a class="align-self-center" href="/auction/{{ auc.id }}">
+      <img class="d-flex mr-3 img-glow-{{ auc.item_quality }}"
+           src="{{ url_for('static', filename = 'images/' + auc.item_id|string + '.png') }}"
+           width="36px" alt="">
+    </a>
+    <div class="media-body row">
+      <div class="col-sm-6 col-7">
+        <h6 class="mb-0">
+          <small><strong>
+            <a class="text-i{{ auc.item_quality }}" href="/auction/{{ auc.id }}">{{ auc.strings.name }}{{
+              auc|itemupgrades }}</a>
+          </strong></small>
+        </h6>
+        <h6 class="mb-0">
+          {% if auc.item_id < 2000000 %}
+          <small class="ml-l text-muted">{{ auc|auctionstats }}</small>
+          {% endif %}
+        </h6>
+        <h6 class="mb-0 hidden-sm-up">
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+      <div class="col-sm-3 col-5">
+        <h6 class="mb-0">
+          <img src="{{ url_for('static', filename = 'images/meso.png') }}"
+               alt="">
+          <small><strong>{{ auc.bid|meso }}</strong></small>
+        </h6>
+        {% if auc.reserve > auc.bid %}
+        <h6 class="mb-0">
+          <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+        </h6>
+        {% endif %}
+      </div>
+      <div class="col-sm-3 hidden-xs-down text-right">
+        <h6>
+          <small class="text-muted"><span class="badge badge-default">{{ auc.end|timeleft }}</span></small>
+        </h6>
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ auction_page.links }}
+{% else %}
+<h6 class="mt-2">There's nothing here.</h6>
+{% endif %}
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Send message to {{ u.username }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" class="form" method="post">
+          {{ message_form.csrf_token }}
+          {{ message_form.message(maxlength=64) }}
+          {{ message_form.send_btn }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

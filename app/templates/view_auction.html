@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="{{ url_for('.static', filename='js/cleave.min.js') }}"></script>
+<div class="card mb-3">
+  <div class="card-block">
+    <div class="media">
+      <a href="/auction/{{ auction.id }}">
+        <img class="d-flex mr-3 img-glow-{{ auction.item_quality }}"
+             src="{{ url_for('static', filename = 'images/' + auction.item_id|string + '.png') }}"
+             width="56px" alt="">
+      </a>
+      <div class="media-body">
+        <div class="row">
+          <div class="col-sm-9">
+            <h5 class="mt-0 mb-0 text-i{{ auction.item_quality }}">
+              {{ auction.strings.name }}{{ auction|itemupgrades}}
+            </h5>
+            {% if auction.item_id < 2000000 %}
+            <small class="ml-l text-muted">{{ auction|auctionstats }}</small>
+            {% else %}
+            <h6 class="mb-0">
+              <small class="ml-l text-muted hidden-xs-down">{{ auction.strings.desc|fixdesc }}</small>
+            </h6>
+            {% endif %}
+            <h5 class="mt-2">
+              <img src="{{ url_for('static', filename = 'images/meso_large.png') }}" alt="" width="18px">
+              <strong>{{ auction.bid|meso }}</strong>
+            </h5>
+            {% if auction.reserve > auction.bid %}
+            <h6 class="mb-1">
+              <small class="text-muted"><span class="badge badge-warning">Reserve not met</span></small>
+            </h6>
+            {% endif %}
+            {% block auction_message %}{% endblock %}
+          </div>
+          <div class="col-sm-3 text-sm-right">
+            <h6 class="mb-0"><a class="card-link" href="/u/{{ sel }}">
+              <strong>{{ sel }}</strong></a> (<a href="/feedback/{{ sel }}">{{ score }}</a>)</h6>
+            <h6>
+              <small>{{ percent }}% Positive</small>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-block">
+    <h5 class="card-title">{{ bid_num }} Bid{% if bid_num > 1 or bid_num <= 0 %}s{% endif %}</h5>
+    <div class="ml-0">
+      {% if bids %}
+      {% for bid in bids %}
+      <div class="row">
+        <div class="col-sm-4 col-7 text-left">
+          <small class="card-text">
+            <img src="{{ url_for('static', filename = 'images/meso.png') }}" alt=""> {{ bid.amount|meso }}
+          </small>
+        </div>
+        <div class="col-sm-4 hidden-xs-down text-center">
+          <small class="card-text">{{ bid.posted|timesince }}</small>
+        </div>
+        <div class="col-sm-4 col-5 text-right">
+          <small class="card-text">
+            {% set biddername = bid.bidder_id|getname %}
+            <a class="card-link" href="/u/{{ biddername }}">{{ biddername }}</a>
+          </small>
+        </div>
+      </div>
+      {% endfor %}
+      {{ bid_page.links }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-block">
+    <h5 class="card-title">{{ comments_num }} Comment{% if comments_num > 1 or comments_num <= 0 %}s{% endif %}</h5>
+    {% block comment_form %}{% endblock %}
+    <ul class="list-unstyled">
+      {% for comment in comments %}
+      <hr>
+      <li class="media">
+        <a href="/u/{{ cname }}">
+          <img class="d-flex mr-3" src="{{ url_for('static', filename = 'images/meso_large.png') }}" width="25px"
+               alt="">
+        </a>
+        <div class="media-body">
+          {% set cname = comment.commenter_id|getname %}
+          <h6 class="mt-0 mb-1">
+            <a class="card-link" href="/u/{{ cname }}">{{ cname }}</a>
+            <small class="text-muted">{{ comment.posted|timesince }}</small>
+          </h6>
+          {{ comment.message }}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {{ comments_page.links }}
+  </div>
+</div>
+<div class="card mb-3">
+  <h6 class="text-center mt-1 ml-1 mb-1">Advertisement</h6>
+  <h6 class="mb-0 text-center hidden-sm-down">Large width ad here</h6>
+  <h6 class="mb-0 text-center hidden-sm-up">Phone ad here</h6>
+</div>
+{% endblock %}

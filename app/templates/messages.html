@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Messages</h3>
+<form method="post" class="">
+  <div class="input-group">
+    {{ add_convo.csrf_token }}
+    {{ add_convo.username }}
+    <span class="input-group-btn">
+      {{ add_convo.add_btn(disabled=True) }}
+    </span>
+  </div>
+</form>
+<hr class="mb-0">
+{% if conversations %}
+<ul class="list-unstyled">
+  {% for convo in conversations %}
+  <li class="media m-2">
+    <a class="align-self-center" href="/messages/{{ convo.conversant|getname }}">
+      <img class="d-flex mr-3" src="{{ url_for('static', filename='images/meso_large.png') }}" width="36px" alt="">
+    </a>
+    <div class="media-body row align-self-center">
+      <div class="col-10">
+        <h5 class="mb-0">
+          <a class="card-link" href="/messages/{{ convo.conversant|getname }}">
+            {{ convo.conversant|getname }}
+          </a>
+        </h5>
+        <h6 class="mt-0 mb-0 one-line">
+          {% if convo.last_read and convo.last_read >= convo.last_msg %}
+          <small class="text-muted">{{ convo|lastmsg }}</small>
+          {% else %}
+          <small class="text-muted"><strong>{{ convo|lastmsg }}</strong></small>
+          {% endif %}
+        </h6>
+      </div>
+      <div class="col-2 text-right align-self-center">
+        <a class="card-link" href="#" data-toggle="modal" data-target="#deleteConvoModal" data-convoid="{{ convo.id }}">
+          <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </li>
+  <hr class="mb-0 mt-0">
+  {% endfor %}
+</ul>
+{{ convo_page.links }}
+{% else %}
+<h6 class="mt-2">There's nothing here.</h6>
+{% endif %}
+<div class="modal fade" id="deleteConvoModal" tabindex="-1" role="dialog" aria-labelledby="deleteConvoModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConvoModalLabel">Delete conversation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this conversation?
+      </div>
+      <div class="modal-footer">
+        <input id="delete_id" name="delete_id" type="hidden" value="">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button id="deleteConvoYes" type="button" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('#username').autocomplete({
+  serviceUrl: '/uac',
+  minChars: 3,
+  dataType: 'json',
+  deferRequestBy: 100,
+  onSelect: function (suggestion) {
+    document.getElementById("add_btn").disabled = false;
+  },
+  onInvalidateSelection: function () {
+     document.getElementById("next_btn").disabled = true;
+  }
+});
+$('#deleteConvoModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var convoid = button.data('convoid');
+    $(this).find('#delete_id').val(convoid);
+  });
+
+  $('#deleteConvoYes').on('click', function (event) {
+    location.href = '/deleteconv/' + $('#deleteConvoModal').find('#delete_id').val();
+  });
+</script>
+
+{% endblock %}

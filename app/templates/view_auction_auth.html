@@ -1,0 +1,65 @@
+{% extends "view_auction.html" %}
+{% block auction_message %}
+<h6>
+  {% if max_bid < 9999999999 %}
+  {% if user.id != auction.seller_id %}
+  <form action="" class="form-inline mt-2" method="post" id="bid_form">
+    {{ bid_form.csrf_token }}
+    <div class="input-group">
+      {% if auction.bid > -1 %}
+      {{ bid_form.amount(size=20, value=max_bid+bid_off) }}
+      <script>
+        var cleave = new Cleave('.input-element', {
+          numeral: true,
+          numeralThousandsGroupStyle: 'thousand'
+        });
+
+        $('#bid_form').on('submit', function() {
+          var input = $('#amount');
+          input.val(input.val().replace(/,/g, ''));
+        });
+      </script>
+      <span class="input-group-btn">
+                      {{ bid_form.bid_btn }}
+                    </span>
+      {% endif %}
+    </div>
+    <div class="has-danger">
+      {% if bid_form.amount.errors %}
+      {% for e in bid_form.amount.errors %}
+      <h6>
+        <small class="form-control-feedback">{{ e }}</small>
+      </h6>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </form>
+  {% endif %}
+  {% else %}
+  This auction has reached the max possible bid.
+  {% endif %}
+</h6>
+<h6>
+  <small class="ml-0 text-muted">{{ auction.end|timeleft }}
+    {% if auction.seller_id != user.id and not auction.watchers.filter_by(watcher_id=user.id).first() %}
+    <a class="card-link ml-1" href="/watch/{{ auction.id }}">Watch</a>
+    {% endif %}
+  </small>
+</h6>
+{% endblock %}
+{% block comment_form %}
+<div class="form-group {% if comment_form.comment.errors %}has-danger{% endif %}">
+  <form action="" class="form mt-2" method="post">
+    {{ comment_form.csrf_token }}
+    {{ comment_form.comment }}
+    <div class="has-danger">
+      {% if comment_form.comment.errors %}
+      {% for e in comment_form.comment.errors %}
+      <p class="form-control-feedback">{{ e }}</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+    {{ comment_form.comment_btn }}
+  </form>
+</div>
+{% endblock %}

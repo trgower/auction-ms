@@ -1,0 +1,99 @@
+{% extends "post_auction.html" %}
+{% block equipment %}
+<div class="col-sm-4">
+  {% for field in auction_form %}
+  {% if field.description %}
+  <div class="input-group input-group-md mb-2">
+    <span class="input-group-addon">
+      <small>{{ field.label.text }}</small>
+    </span>
+    {% if field.label.text == 'SLOTS' %}
+    {{ field(min=0, max=field.data|int) }}
+    {% elif field.label.text == 'UPGRADES' %}
+    {{ field(min=0, max=auction_form.slots.data|int) }}
+    {% else %}
+    {{ field(min=0, max=field.data|int + 50) }}
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+<div class="col-sm-8">
+  {{ auction_form.item_id }}
+  {{ auction_form.tuc }}
+  <div class="mb-2 form-group row {% if auction_form.starting_bid.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.starting_bid.label.text }}</label>
+    <div class="input-group input-group-lg col-9">
+      {{ auction_form.starting_bid }}
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.starting_bid.errors %}
+    {% for e in auction_form.starting_bid.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <small><div class="form-group row {% if auction_form.min_bid_inc.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.min_bid_inc.label.text }}</label>
+    <div class="input-group input-group-md col-9">
+      {{ auction_form.min_bid_inc }}
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.min_bid_inc.errors %}
+    {% for e in auction_form.min_bid_inc.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div></small>
+  <div class="form-group row {% if auction_form.reserve.errors %}has-danger{% endif %}">
+    <label class="col-3 col-form-label">{{ auction_form.reserve.label.text }} <a class="text-info" href="#" data-toggle="modal" data-target="#reserveModal"><i class="fa fa-question-circle" aria-hidden="true"></i></a></label>
+    <div class="input-group input-group-lg mt-1 col-9">
+      <span class="input-group-addon">
+        {{ auction_form.reserve_check }}
+      </span>
+      {{ auction_form.reserve(disabled=True) }}
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.reserve.errors %}
+    {% for e in auction_form.reserve.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <div class="form-group row">
+    <label class="col-3 col-form-label">{{ auction_form.length.label.text }}</label>
+    <div class="input-group input-group-lg mt-1 col-9">
+      {{ auction_form.length }}
+    </div>
+  </div>
+  <div class="form-group row">
+    <!-- Thank you C++ for the suggestion! -->
+    <label class="col-3 col-form-label">{{ auction_form.fm_channel.label.text }} <a class="text-warning" href="#" data-toggle="modal" data-target="#fmSpotModal"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></label>
+    <div class="input-group input-group-lg mt-1 col-5">
+      {{ auction_form.fm_channel }}
+    </div>
+    <div class="input-group input-group-lg mt-1 col-4">
+      {{ auction_form.fm_door }}
+    </div>
+  </div>
+  <div class="has-danger text-right">
+    {% if auction_form.fm_channel.errors %}
+    {% for e in auction_form.fm_channel.errors %}
+    <p class="form-control-feedback">{{ e }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <div class="form-group {% if auction_form.recaptcha.errors %}has-danger{% endif %}">
+    {{ auction_form.recaptcha }}
+    {% if auction_form.recaptcha.errors %}
+    <p align="center" class="form-control-feedback">reCAPTCHA verification failed!</p>
+    {% endif %}
+  </div>
+  {{ auction_form.submit }}
+  <script src="/static/js/post_auction.js"></script>
+  <script src="/static/js/post_equip.js"></script>
+</div>
+{% endblock %}

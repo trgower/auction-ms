@@ -1,0 +1,7 @@
+{% extends "view_auction.html" %}
+{% block auction_message %}
+<h6>You must be logged in to bid on this auction.</h6>
+<h6>
+  <small class="ml-0 text-muted">{{ auction.end|timeleft }}</small>
+</h6>
+{% endblock %}

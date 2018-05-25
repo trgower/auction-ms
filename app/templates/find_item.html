@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Find an Item</h3>
+<form id="item_search" class="form" method="post">
+  {{ item_form.csrf_token }}
+  {{ item_form.item_name }}
+  {{ item_form.item_id }}
+  <div class="card" id="item_card" hidden>
+    <div class="card-block">
+      <div class="media">
+        <a class="align-self-center"><img id="item_card_image" class="float-left mr-3" src="" width="80px" alt=""></a>
+        <div class="media-body">
+          <h4 id="item_card_title"></h4>
+          <h6 class="mb-0"><small class="text-muted" id="item_card_desc"></small></h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+  {{ item_form.next_btn(disabled=True) }}
+</form>
+<script src="/static/js/finditem.js"></script>
+{% endblock %}
