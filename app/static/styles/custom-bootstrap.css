@@ -1,0 +1,135 @@
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 4px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: strong; color: #3399FF; }
+.autocomplete-group { padding: 2px 4px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
+.g-recaptcha div {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+textarea {
+    resize: none;
+}
+
+@media (max-width: 768px) {
+  .form-inline .form-control {
+    width: 210px; // your width
+  }
+}
+
+.img-glow-4 {
+    -webkit-filter: drop-shadow(0px 0px 3px rgba(255, 206, 0, 0.8));
+}
+
+.img-glow-2 {
+    -webkit-filter: drop-shadow(0px 0px 3px rgba(71, 147, 255, 0.6));
+}
+
+.img-glow-3 {
+    -webkit-filter: drop-shadow(0px 0px 3px rgba(163, 0, 255, 0.6));
+}
+
+.text-i0 {
+  color: #5bc0de !important;
+}
+
+a.text-i0:focus, a.text-i0:hover {
+  color: #31b0d5 !important;
+  text-decoration: none;
+}
+
+.text-i-1 {
+  color: #7a7a7a !important;
+}
+
+a.text-i-1:focus, a.text-i-1:hover {
+  color: #333333 !important;
+  text-decoration: none;
+}
+
+.text-i1 {
+  color: #ff8d00 !important;
+}
+
+a.text-i1:focus, a.text-i1:hover {
+  color: #dd7a00 !important;
+  text-decoration: none;
+}
+
+.text-i2 {
+  color: #4993fc !important;
+}
+
+a.text-i2:focus, a.text-i2:hover {
+  color: #003ec3 !important;
+  text-decoration: none;
+}
+
+.text-i3 {
+  color: #a300ff !important;
+}
+
+a.text-i3:focus, a.text-i3:hover {
+  color: #7800bd !important;
+  text-decoration: none;
+}
+
+.text-i4 {
+  color: #ffce00 !important;
+}
+
+a.text-i4:focus, a.text-i4:hover {
+  color: #f0c200 !important;
+  text-decoration: none;
+}
+
+@media (min-width: 360px) {
+    .one-line {
+        width: 16rem;
+    }
+}
+@media (min-width: 576px) {
+    .one-line {
+        width: 25rem;
+    }
+}
+@media (min-width: 992px) {
+    .one-line {
+        width: 31rem;
+    }
+}
+@media (min-width: 1200px) {
+    .one-line {
+        width: 38rem;
+    }
+}
+
+.one-line {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0.5rem;
+  background-color: #efefef;
+  text-align: center;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  padding-bottom: 6rem;
+  min-height: 100%;
+}
